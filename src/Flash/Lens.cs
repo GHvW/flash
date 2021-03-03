@@ -6,11 +6,21 @@ using System.Threading.Tasks;
 
 namespace Flash {
 
-    public record Lens<A, B>(Func<A, B> Get, Func<B, A, A> Set) {
+    //public record Lens<A, B>(Func<A, B> Get, Func<B, A, A> Set) {
 
-        public Lens<A, C> Compose<C>(Lens<B, C> other) =>
+    //    public Lens<A, C> Compose<C>(Lens<B, C> other) =>
+    //        new Lens<A, C>(
+    //            Get: (a) => other.Get(this.Get(a)),
+    //            Set: (c, a) => this.Set(other.Set(c, this.Get(a)), a));
+    //}
+
+    public record Lens<A, B>(Func<A, B> Get, Func<B, A, A> Set);
+
+    public static class LensExtensions {
+
+        public static Lens<A, C> Compose<A, B, C>(this Lens<A, B> @this, Lens<B, C> other) =>
             new Lens<A, C>(
-                Get: (a) => other.Get(this.Get(a)),
-                Set: (c, a) => this.Set(other.Set(c, this.Get(a)), a));
+                Get: (a) => other.Get(@this.Get(a)),
+                Set: (c, a) => @this.Set(other.Set(c, @this.Get(a)), a));
     }
 }
